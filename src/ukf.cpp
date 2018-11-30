@@ -140,9 +140,9 @@ void UKF::Prediction(double delta_t) {
   */  
 
   // Set Sigma Points
-  VectorXd x_aug = VectorXd(7);
+  VectorXd x_aug = VectorXd(n_aug_);
   
-  MatrixXd P_aug = MatrixXd(7,7);
+  MatrixXd P_aug = MatrixXd(n_aug_,n_aug_);
   
   MatrixXd Xsig_aug = MatrixXd(n_aug_, 2*n_aug_ + 1);
   
