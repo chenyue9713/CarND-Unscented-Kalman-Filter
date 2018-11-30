@@ -146,12 +146,12 @@ void UKF::Prediction(double delta_t) {
   
   MatrixXd Xsig_aug = MatrixXd(n_aug_, 2*n_aug_ + 1);
   
-  x_aug.head(5) = x;
+  x_aug.head(5) = x_;
   x_aug(5) = 0;
   x_aug(6) = 0;
   
   P_aug.fill(0.0);
-  p_aug.topLeftCorner(5,5) = P;
+  p_aug.topLeftCorner(5,5) = P_;
   P_aug(5,5) = std_a_ * std_a_;
   P_aug(6,6) = std_yawdd_ * std_yawdd_;
   
@@ -160,8 +160,8 @@ void UKF::Prediction(double delta_t) {
   Xsig_aug.col(0) = x_aug;
   for(int i = 0; i < n_aug_; i++)
   {
-    Xsig_aug.col(i+1)  = X_aug + sqrt(lambda_ + n_aug_) * L.col(i);
-    Xsig_aug.col(i+1+n_aug_)  = X_aug - sqrt(lambda_ + n_aug_) * L.col(i);
+    Xsig_aug.col(i+1)  = x_aug + sqrt(lambda_ + n_aug_) * L.col(i);
+    Xsig_aug.col(i+1+n_aug_)  = x_aug - sqrt(lambda_ + n_aug_) * L.col(i);
   }
   
   //Predict Sigma Points
@@ -271,9 +271,9 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
   You'll also need to calculate the radar NIS.
   */
   int n_z = 3
-  MatrixXd Zsig = MatrixXd(n_z, 2 * n_aug + 1);
+  MatrixXd Zsig = MatrixXd(n_z, 2 * n_aug_ + 1);
 	
-  for(int i = 0 ; i < 2 * n_aug + 1; i++)
+  for(int i = 0 ; i < 2 * n_aug_ + 1; i++)
   {
 	  double p_x = Xsig_pred_(0,i);
 	  double p_y = Xsig_pred_(1,i);
@@ -290,7 +290,7 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
 	
   VectorXd z_pred = VectorXd(n_z);
   z_pred.fill(0.0);
-  for(int i = 0; i < 2*n_aug+1; i++)
+  for(int i = 0; i < 2*n_aug_+1; i++)
   {
 	  z_pred = z_pred + weights_(i)*Zsig.col(i);
   }
@@ -321,7 +321,7 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
   
   MatrixXd Tc = MatrixXd(n_x_, n_z);
   Tc.fill(0.0);
-  for (int i = 0; i < 2 * n_aug + 1; i++) {  
+  for (int i = 0; i < 2 * n_aug_ + 1; i++) {  
 
     //residual
     VectorXd z_diff = Zsig.col(i) - z_pred;
