@@ -72,6 +72,7 @@ UKF::UKF() {
   NIS_radar_ = 0.0;
 
   NIS_laser_ = 0.0;
+
   
   
   
@@ -172,7 +173,9 @@ void UKF::Prediction(double delta_t) {
   x_aug(6) = 0;
   
   P_aug.fill(0.0);
+
   P_aug.topLeftCorner(5,5) = P_;
+
   P_aug(5,5) = std_a_ * std_a_;
   P_aug(6,6) = std_yawdd_ * std_yawdd_;
   
@@ -185,7 +188,7 @@ void UKF::Prediction(double delta_t) {
   }
   
   //Predict Sigma Points
-  
+
 
   for(int i = 0; i < 2 * n_aug_ + 1; i++)
   {
@@ -230,8 +233,7 @@ void UKF::Prediction(double delta_t) {
   
 
   // Predicted Mean and Covariance
-  
-  
+
   double weight_0 = lambda_/(lambda_+n_aug_);
   weights_(0) = weight_0;
   for(int i = 1; i < 2*n_aug_ + 1; i++)
@@ -354,6 +356,7 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
   You'll also need to calculate the radar NIS.
   */
   int n_z = 3;
+
   MatrixXd Zsig = MatrixXd(n_z, 2 * n_aug_ + 1);
 	
   for(int i = 0 ; i < 2 * n_aug_ + 1; i++)
@@ -398,7 +401,6 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
   S = S + R;
 	
   VectorXd z = meas_package.raw_measurements_; 
-	
   
   MatrixXd Tc = MatrixXd(n_x_, n_z);
   Tc.fill(0.0);
@@ -412,11 +414,13 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
 
     // state difference
     VectorXd x_diff = Xsig_pred_.col(i) - x_;
+
     //angle normalization
     while (x_diff(3)> M_PI) x_diff(3)-=2.*M_PI;
     while (x_diff(3)<-M_PI) x_diff(3)+=2.*M_PI;
 
     Tc = Tc + weights_(i) * x_diff * z_diff.transpose();
+
   }
    
   MatrixXd K = Tc * S.inverse();
@@ -430,6 +434,7 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
   P_ = P_ - K*S*K.transpose();
   
   NIS_radar_ = z_diff.transpose() * S.inverse() * z_diff;
+
  
 }
 
