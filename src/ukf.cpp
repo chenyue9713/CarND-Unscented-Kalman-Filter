@@ -114,8 +114,6 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
       
       x_(0) = px;
       x_(1) = py;
-      x_(3) = ro_dot * cos(theta);
-      x_(4) = ro_dot * cos(theta);
       
       
         
