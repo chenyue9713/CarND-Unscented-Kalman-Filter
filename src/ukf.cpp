@@ -339,7 +339,9 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
   P_ = P_ - K*S*K.transpose();
 
   NIS_laser_ = z_diff.transpose() * S.inverse() * z_diff;
-  //KF Update for Lidar linear system
+  //KF Update for Lidar linear system, which need 
+  //less computational resources and have better real time performance
+  
   /* MatrixXd R_ = MatrixXd(2,2);
    MatrixXd H_ = MatrixXd(2,5);
    R_ << std_laspx_ * std_laspx_, 0,
