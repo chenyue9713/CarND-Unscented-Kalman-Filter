@@ -25,7 +25,7 @@ UKF::UKF() {
   P_ = MatrixXd(5, 5);
 
   // Process noise standard deviation longitudinal acceleration in m/s^2
-  std_a_ = 1.5;
+  std_a_ = 0.8;
 
   // Process noise standard deviation yaw acceleration in rad/s^2
   std_yawdd_ = 0.5;
@@ -270,7 +270,7 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
   position. Modify the state vector, x_, and covariance, P_.
   You'll also need to calculate the lidar NIS.
   */
-  //Predicted Radar Measurement
+  //Predicted Lidar Measurement
   int n_z = 2;
   MatrixXd Zsig = MatrixXd(n_z,2*n_aug_ +  1);
 
@@ -337,8 +337,32 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
 	
   x_ = x_ + K * z_diff;
   P_ = P_ - K*S*K.transpose();
-  
+
   NIS_laser_ = z_diff.transpose() * S.inverse() * z_diff;
+  //KF Update for Lidar linear system
+  /* MatrixXd R_ = MatrixXd(2,2);
+   MatrixXd H_ = MatrixXd(2,5);
+   R_ << std_laspx_ * std_laspx_, 0,
+         0, std_laspy_ * std_laspy_;
+   H_ << 1, 0, 0, 0, 0,
+         0, 1, 0, 0, 0;
+
+   VectorXd z_pred = H_* x_;
+   VectorXd y = meas_package.raw_measurements_ - z_pred;
+   MatrixXd Ht = H_.transpose();
+   MatrixXd PHt = P_ * Ht;
+   MatrixXd S = H_ * PHt + R_;
+   MatrixXd Si = S.inverse();
+   MatrixXd K = PHt * Si;
+
+   x_ = x_ + (K * y);
+   long x_size = x_.size();
+   MatrixXd I = MatrixXd::Identity(x_size, x_size);
+   P_ = (I - K * H_) * P_;
+
+
+   NIS_laser_ = y.transpose() * S.inverse() * y;*/
+
 
 
 }
